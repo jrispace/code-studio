@@ -1,5 +1,7 @@
 # Code Studio — JRiSpace
 
+**Live:** https://codestudio.jrispace.com
+
 Offline QR / code generator. One HTML file, no server, no network, no tracking.
 
 ## Use
@@ -25,6 +27,11 @@ python3 build.py       # src/app.html + lib/qrcode.js -> index.html
 - `src/app.html` — the app shell, styles and logic (edit this)
 - `lib/qrcode.js` — qrcode-generator v1.4.4, Kazuhiko Arase, MIT
 - `index.html` — standalone build, library inlined for `file://` use
+
+## Hosting
+
+GitHub Pages from `main` / root, custom domain `codestudio.jrispace.com`
+(`CNAME` in this repo + a DNS-only CNAME `codestudio` → `jrispace.github.io` at Cloudflare).
 
 ## Verified
 
