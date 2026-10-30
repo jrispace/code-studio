@@ -53,7 +53,7 @@
   #clearLogo{height:40px;padding:0 14px;line-height:1}
   footer{max-width:1080px;margin:6px auto 28px;padding:0 22px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
   footer a{color:var(--muted)}
-  @media(max-width:860px){ main{grid-template-columns:1fr} .row.three{grid-template-columns:1fr 1fr} }
+  @media(max-width:860px){ main{grid-template-columns:1fr} .row.three{grid-template-columns:1fr 1fr} input[type=color],#clearLogo,.check{min-height:44px} }
 </style>
 </head>
 <body>
@@ -122,10 +122,10 @@
   <section class="card">
     <h2>Preview</h2>
     <div class="preview-wrap" id="previewWrap">
-      <canvas id="qrCanvas" width="360" height="360"></canvas>
+      <canvas role="img" aria-label="QR code preview" id="qrCanvas" width="360" height="360"></canvas>
     </div>
-    <div class="meta" id="meta">—</div>
-    <div class="err" id="err"></div>
+    <div class="meta" id="meta" aria-live="polite">—</div>
+    <div class="err" id="err" aria-live="polite"></div>
     <div class="actions">
       <button class="act primary" id="dlPng">Download PNG</button>
       <button class="act" id="dlSvg">Download SVG</button>
@@ -2451,7 +2451,18 @@ var qrcode = function() {
   var $ = function(id){ return document.getElementById(id); };
   var canvas = $("qrCanvas"), ctx = canvas.getContext("2d");
   var state = { logo: null, qr: null, count: 0, lastOpts: null };
-  var timer = null;
+  var timer = null, logoToken = 0;
+  var exportIds = ["dlPng", "dlSvg", "copyBtn", "copyText"];
+
+  function clearPreview(o){
+    state.qr = null;
+    $("meta").textContent = "—";
+    $("previewWrap").classList.toggle("transparent", o.transparent);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!o.transparent){ ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+    canvas.setAttribute("aria-label", "QR code preview: no encoded content");
+    exportIds.forEach(function(id){ $(id).disabled = true; });
+  }
 
   function normalizeText(t){
     var v = t.trim();
@@ -2479,11 +2490,7 @@ var qrcode = function() {
     var o = opts();
     $("err").textContent = "";
     if (!text){
-      $("meta").textContent = "—";
-      $("previewWrap").classList.toggle("transparent", o.transparent);
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
-      state.qr = null;
+      clearPreview(o);
       return;
     }
     try {
@@ -2492,13 +2499,14 @@ var qrcode = function() {
       qr.make();
       state.qr = qr; state.count = qr.getModuleCount(); state.lastOpts = o; state.text = text;
       draw(qr, o);
+      canvas.setAttribute("aria-label", "QR code encoding: " + text);
+      exportIds.forEach(function(id){ $(id).disabled = false; });
       var px = renderedPx(qr.getModuleCount(), o);
-      $("meta").textContent = "v" + qr.getModuleCount() + " · " + qr.getModuleCount() + "×" + qr.getModuleCount() +
+      $("meta").textContent = "v" + ((qr.getModuleCount() - 17) / 4) + " · " + qr.getModuleCount() + "×" + qr.getModuleCount() +
         " modules · ECC " + o.ecc + " · " + px + " px";
       if (o.ecc !== "H" && state.logo) $("err").textContent = "Logo detected — use error correction H for reliable scanning.";
     } catch(e){
-      state.qr = null;
-      $("meta").textContent = "—";
+      clearPreview(o);
       $("err").textContent = "Cannot encode: " + (e && e.message ? e.message : e);
     }
   }
@@ -2506,7 +2514,7 @@ var qrcode = function() {
   function geometry(count, o){
     var total = count + o.margin * 2;
     var mod = Math.max(1, Math.floor(o.size / total));
-    return { total: total, mod: mod, px: total * mod };
+    return { total: total, mod: mod, px: o.size, offset: Math.floor((o.size - total * mod) / 2) };
   }
   function renderedPx(count, o){ return geometry(count, o).px; }
 
@@ -2532,19 +2540,27 @@ var qrcode = function() {
     ctx.fillStyle = o.fg;
     for (var r = 0; r < count; r++){
       for (var c = 0; c < count; c++){
-        if (qr.isDark(r, c)) ctx.fillRect((c + o.margin) * g.mod, (r + o.margin) * g.mod, g.mod, g.mod);
+        if (qr.isDark(r, c)) ctx.fillRect(g.offset + (c + o.margin) * g.mod, g.offset + (r + o.margin) * g.mod, g.mod, g.mod);
       }
     }
 
     if (state.logo){
-      var side = Math.round(g.px * o.logoPct / 100);
-      var x = Math.round((g.px - side) / 2), y = x;
-      var pad = Math.max(3, Math.round(side * 0.09));
+      var box = logoBox(count, g, o), side = box.side, pad = box.pad;
+      var x = box.xy, y = x;
       ctx.fillStyle = o.transparent ? "#ffffff" : o.bg;
       roundRect(ctx, x - pad, y - pad, side + pad * 2, side + pad * 2, Math.round(side * 0.16));
       ctx.fill();
-      ctx.drawImage(state.logo, x, y, side, side);
+      var scale = Math.min(side / state.logo.naturalWidth, side / state.logo.naturalHeight);
+      var w = state.logo.naturalWidth * scale, h = state.logo.naturalHeight * scale;
+      ctx.drawImage(state.logo, x + (side - w) / 2, y + (side - h) / 2, w, h);
     }
+  }
+
+  function logoBox(count, g, o){
+    var area = count * g.mod, cap = Math.floor(area * 0.25);
+    var side = Math.min(Math.round(area * o.logoPct / 100), Math.floor(cap / 1.18));
+    var pad = Math.min(Math.max(3, Math.round(side * 0.09)), Math.floor((cap - side) / 2));
+    return { side: side, pad: pad, xy: Math.round(g.offset + o.margin * g.mod + (area - side) / 2) };
   }
 
   function download(blob, name){
@@ -2565,7 +2581,7 @@ var qrcode = function() {
     var d = "";
     for (var r = 0; r < count; r++){
       for (var c = 0; c < count; c++){
-        if (qr.isDark(r, c)) d += "M" + ((c + o.margin) * s) + " " + ((r + o.margin) * s) + "h" + s + "v" + s + "h-" + s + "z";
+        if (qr.isDark(r, c)) d += "M" + (g.offset + (c + o.margin) * s) + " " + (g.offset + (r + o.margin) * s) + "h" + s + "v" + s + "h-" + s + "z";
       }
     }
     var out = '<?xml version="1.0" encoding="UTF-8"?>\n' +
@@ -2573,10 +2589,10 @@ var qrcode = function() {
     if (!o.transparent) out += '<rect width="100%" height="100%" fill="' + o.bg + '"/>';
     out += '<path d="' + d + '" fill="' + o.fg + '"/>';
     if (state.logo && state.logoDataUrl){
-      var side = Math.round(g.px * o.logoPct / 100), xy = Math.round((g.px - side) / 2), pad = Math.max(3, Math.round(side * 0.09));
+      var box = logoBox(count, g, o), side = box.side, xy = box.xy, pad = box.pad;
       out += '<rect x="' + (xy - pad) + '" y="' + (xy - pad) + '" width="' + (side + pad * 2) + '" height="' + (side + pad * 2) +
              '" rx="' + Math.round(side * 0.16) + '" fill="' + (o.transparent ? "#ffffff" : o.bg) + '"/>';
-      out += '<image x="' + xy + '" y="' + xy + '" width="' + side + '" height="' + side + '" href="' + state.logoDataUrl + '"/>';
+      out += '<image x="' + xy + '" y="' + xy + '" width="' + side + '" height="' + side + '" href="' + state.logoDataUrl + '" preserveAspectRatio="xMidYMid meet"/>';
     }
     out += '</svg>';
     return out;
@@ -2591,12 +2607,20 @@ var qrcode = function() {
   });
 
   $("logo").addEventListener("change", function(e){
+    var token = ++logoToken;
     var f = e.target.files && e.target.files[0];
     if (!f) return;
     var rd = new FileReader();
+    function loadError(){
+      if (token === logoToken) $("err").textContent = "Could not read that image";
+    }
+    rd.onerror = loadError;
     rd.onload = function(){
+      if (token !== logoToken) return;
       var img = new Image();
+      img.onerror = loadError;
       img.onload = function(){
+        if (token !== logoToken) return;
         state.logo = img; state.logoDataUrl = rd.result;
         if ($("ecc").value !== "H") $("ecc").value = "H";
         build();
@@ -2607,24 +2631,33 @@ var qrcode = function() {
   });
 
   $("clearLogo").addEventListener("click", function(){
+    ++logoToken;
     state.logo = null; state.logoDataUrl = null; $("logo").value = ""; build();
   });
 
   $("dlPng").addEventListener("click", function(){
+    clearTimeout(timer); build();
     if (!state.qr) return;
     var blob = null;
     var o = state.lastOpts;
     if (canvas.toBlob) canvas.toBlob(function(b){ if (b) download(b, slug() + ".png"); }, "image/png");
-    else download(new Blob([atob(canvas.toDataURL("image/png").split(",")[1])], {type:"image/png"}), slug() + ".png");
+    else {
+      var binary = atob(canvas.toDataURL("image/png").split(",")[1]);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      download(new Blob([bytes], {type:"image/png"}), slug() + ".png");
+    }
   });
 
   $("dlSvg").addEventListener("click", function(){
+    clearTimeout(timer); build();
     if (!state.qr) return;
     var svg = toSvg(state.qr, state.lastOpts);
     download(new Blob([svg], {type:"image/svg+xml"}), slug() + ".svg");
   });
 
   $("copyBtn").addEventListener("click", function(){
+    clearTimeout(timer); build();
     if (!state.qr) return;
     canvas.toBlob(function(b){
       if (!b || !navigator.clipboard || !window.ClipboardItem){
@@ -2639,13 +2672,19 @@ var qrcode = function() {
   });
 
   $("copyText").addEventListener("click", function(){
+    clearTimeout(timer); build();
+    if (!state.qr) return;
     var t = normalizeText($("content").value);
     if (!t) return;
     var ta = document.createElement("textarea");
     ta.value = t; ta.style.cssText = "position:fixed;opacity:0";
     document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); $("meta").textContent = "Copied text ✓"; } catch(e){}
+    try {
+      if (document.execCommand("copy")) $("meta").textContent = "Copied text ✓";
+      else $("err").textContent = "Could not copy text.";
+    } catch(e){ $("err").textContent = "Could not copy text."; }
     ta.remove();
+    $("copyText").focus();
   });
 
   $("themeBtn").addEventListener("click", function(){
