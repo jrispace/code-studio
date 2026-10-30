@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code Studio — JRiSpace</title>
+<script>(function(){try{var t=localStorage.getItem("qrs-theme");if(t==="dark")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb;
+    --brand:#002080; --accent:#c0182f; --field:#ffffff; --chip:#f1f3f9; --shadow:0 10px 30px rgba(17,24,39,.08);
+  }
+  html[data-theme="dark"]{
+    --bg:#0b0e14; --card:#131824; --ink:#eef1f7; --muted:#93a0b5; --line:#232b3b;
+    --brand:#7ea2ff; --accent:#ff5c72; --field:#0f1420; --chip:#1a2233; --shadow:0 10px 30px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;-webkit-font-smoothing:antialiased}
+  header{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:10}
+  .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(140deg,var(--brand),var(--accent));display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px}
+  h1{font-size:16px;margin:0;letter-spacing:.2px}
+  h1 span{color:var(--muted);font-weight:500;font-size:12px;display:block;letter-spacing:.6px;text-transform:uppercase}
+  header .spacer{flex:1}
+  .iconbtn{background:var(--chip);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:7px 11px;cursor:pointer;font-size:13px}
+  main{max-width:1080px;margin:0 auto;padding:22px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:20px;align-items:start}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:0 0 12px}
+  label{display:block;font-size:12.5px;color:var(--muted);margin:0 0 5px}
+  textarea,input[type=text],input[type=number],select{
+    width:100%;background:var(--field);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:14px/1.45 inherit;outline:none
+  }
+  textarea{min-height:76px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+  textarea:focus,input:focus,select:focus{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 18%,transparent)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .row.three{grid-template-columns:1fr 1fr 1fr}
+  .fld{margin-top:12px}
+  .colors{display:flex;gap:10px;align-items:center}
+  input[type=color]{width:44px;height:38px;padding:2px;border:1px solid var(--line);border-radius:10px;background:var(--field);cursor:pointer}
+  .check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);margin-top:12px;cursor:pointer}
+  .check input{width:16px;height:16px;accent-color:var(--brand)}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  .preview-wrap{position:relative;display:grid;place-items:center;padding:18px;border-radius:16px;background:
+     radial-gradient(320px 220px at 50% 40%, color-mix(in srgb,var(--brand) 12%,transparent), transparent 70%), var(--chip);}
+  canvas{width:100%;max-width:360px;height:auto;image-rendering:pixelated;border-radius:8px;background:#fff}
+  html[data-theme="dark"] canvas{background:#fff}
+  .transparent canvas{background-image:conic-gradient(#e9ecf3 25%,#fff 0 50%,#e9ecf3 0 75%,#fff 0);background-size:18px 18px}
+  .meta{margin-top:14px;font-size:12.5px;color:var(--muted);text-align:center;min-height:18px}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  button.act{border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:11px;padding:11px 12px;font-size:13.5px;font-weight:600;cursor:pointer}
+  button.act.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+  button.act:disabled{opacity:.5;cursor:not-allowed}
+  .err{color:var(--accent);font-size:12.5px;margin-top:8px;min-height:16px}
+  #clearLogo{height:40px;padding:0 14px;line-height:1}
+  footer{max-width:1080px;margin:6px auto 28px;padding:0 22px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  footer a{color:var(--muted)}
+  @media(max-width:860px){ main{grid-template-columns:1fr} .row.three{grid-template-columns:1fr 1fr} }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">CS</div>
+  <h1>Code Studio <span>JRiSpace</span></h1>
+  <div class="spacer"></div>
+  <button class="iconbtn" id="themeBtn" title="Toggle theme">◐</button>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Content</h2>
+    <div class="fld">
+      <label for="content">Text or URL</label>
+      <textarea id="content" spellcheck="false" placeholder="https://example.com">https://bit.ly/4x59SvP</textarea>
+      <div class="hint">Any text works — a bare domain gets https:// added automatically.</div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="ecc">Error correction</label>
+        <select id="ecc">
+          <option value="L">L — 7% recovery</option>
+          <option value="M">M — 15% recovery</option>
+          <option value="Q">Q — 25% recovery</option>
+          <option value="H" selected>H — 30% recovery</option>
+        </select>
+      </div>
+      <div>
+        <label for="size">Export size (px)</label>
+        <input type="number" id="size" value="1000" min="100" max="4000" step="50">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="margin">Quiet zone (modules)</label>
+        <input type="number" id="margin" value="4" min="0" max="16">
+      </div>
+      <div>
+        <label>Colors</label>
+        <div class="colors">
+          <input type="color" id="fg" value="#000000" title="Foreground">
+          <input type="color" id="bg" value="#ffffff" title="Background">
+        </div>
+      </div>
+    </div>
+
+    <label class="check"><input type="checkbox" id="transparent"> Transparent background</label>
+
+    <div class="fld">
+      <label for="logo">Center logo (optional)</label>
+      <input type="file" id="logo" accept="image/*" style="width:100%;font-size:12.5px;color:var(--muted)">
+      <div class="row" style="grid-template-columns:1fr auto;align-items:end">
+        <div>
+          <label for="logoPct">Logo size (% of code)</label>
+          <input type="number" id="logoPct" value="22" min="10" max="30">
+        </div>
+        <button class="act" id="clearLogo" style="padding:9px 12px">Clear</button>
+      </div>
+      <div class="hint">Keep error correction at H when a logo is used.</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Preview</h2>
+    <div class="preview-wrap" id="previewWrap">
+      <canvas id="qrCanvas" width="360" height="360"></canvas>
+    </div>
+    <div class="meta" id="meta">—</div>
+    <div class="err" id="err"></div>
+    <div class="actions">
+      <button class="act primary" id="dlPng">Download PNG</button>
+      <button class="act" id="dlSvg">Download SVG</button>
+      <button class="act" id="copyBtn">Copy image</button>
+      <button class="act" id="copyText">Copy text</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Code Studio — offline, no data leaves this machine.</span>
+  <span>Sylvenson Richard · <a href="https://jrispace.com">JRiSpace</a></span>
+</footer>
+
+<!--__QRLIB__-->
+
+<script>
+(function(){
+  "use strict";
+  /* UTF-8 support for non-ASCII content */
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
+
+  var $ = function(id){ return document.getElementById(id); };
+  var canvas = $("qrCanvas"), ctx = canvas.getContext("2d");
+  var state = { logo: null, qr: null, count: 0, lastOpts: null };
+  var timer = null;
+
+  function normalizeText(t){
+    var v = t.trim();
+    if (!v) return "";
+    if (/^[a-z][a-z0-9+.-]*:\/\//i.test(v) || /^mailto:|^tel:|^sms:|^wifi:|^BEGIN:/i.test(v)) return v;
+    if (/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)) return "mailto:" + v;
+    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(\/[^\s]*)?$/i.test(v)) return "https://" + v;
+    return v;
+  }
+
+  function opts(){
+    return {
+      ecc: $("ecc").value,
+      size: Math.min(4000, Math.max(100, parseInt($("size").value, 10) || 1000)),
+      margin: Math.min(16, Math.max(0, parseInt($("margin").value, 10) || 0)),
+      fg: $("fg").value,
+      bg: $("bg").value,
+      transparent: $("transparent").checked,
+      logoPct: Math.min(30, Math.max(10, parseInt($("logoPct").value, 10) || 22))
+    };
+  }
+
+  function build(){
+    var text = normalizeText($("content").value);
+    var o = opts();
+    $("err").textContent = "";
+    if (!text){
+      $("meta").textContent = "—";
+      $("previewWrap").classList.toggle("transparent", o.transparent);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "#fff"; ctx.fillRect(0,0,canvas.width,canvas.height);
+      state.qr = null;
+      return;
+    }
+    try {
+      var qr = qrcode(0, o.ecc);
+      qr.addData(text);
+      qr.make();
+      state.qr = qr; state.count = qr.getModuleCount(); state.lastOpts = o; state.text = text;
+      draw(qr, o);
+      var px = renderedPx(qr.getModuleCount(), o);
+      $("meta").textContent = "v" + qr.getModuleCount() + " · " + qr.getModuleCount() + "×" + qr.getModuleCount() +
+        " modules · ECC " + o.ecc + " · " + px + " px";
+      if (o.ecc !== "H" && state.logo) $("err").textContent = "Logo detected — use error correction H for reliable scanning.";
+    } catch(e){
+      state.qr = null;
+      $("meta").textContent = "—";
+      $("err").textContent = "Cannot encode: " + (e && e.message ? e.message : e);
+    }
+  }
+
+  function geometry(count, o){
+    var total = count + o.margin * 2;
+    var mod = Math.max(1, Math.floor(o.size / total));
+    return { total: total, mod: mod, px: total * mod };
+  }
+  function renderedPx(count, o){ return geometry(count, o).px; }
+
+  function roundRect(c, x, y, w, h, r){
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.arcTo(x + w, y, x + w, y + h, r);
+    c.arcTo(x + w, y + h, x, y + h, r);
+    c.arcTo(x, y + h, x, y, r);
+    c.arcTo(x, y, x + w, y, r);
+    c.closePath();
+  }
+
+  function draw(qr, o){
+    var count = qr.getModuleCount();
+    var g = geometry(count, o);
+    canvas.width = g.px; canvas.height = g.px;
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, g.px, g.px);
+    $("previewWrap").classList.toggle("transparent", o.transparent);
+    if (!o.transparent){ ctx.fillStyle = o.bg; ctx.fillRect(0, 0, g.px, g.px); }
+
+    ctx.fillStyle = o.fg;
+    for (var r = 0; r < count; r++){
+      for (var c = 0; c < count; c++){
+        if (qr.isDark(r, c)) ctx.fillRect((c + o.margin) * g.mod, (r + o.margin) * g.mod, g.mod, g.mod);
+      }
+    }
+
+    if (state.logo){
+      var side = Math.round(g.px * o.logoPct / 100);
+      var x = Math.round((g.px - side) / 2), y = x;
+      var pad = Math.max(3, Math.round(side * 0.09));
+      ctx.fillStyle = o.transparent ? "#ffffff" : o.bg;
+      roundRect(ctx, x - pad, y - pad, side + pad * 2, side + pad * 2, Math.round(side * 0.16));
+      ctx.fill();
+      ctx.drawImage(state.logo, x, y, side, side);
+    }
+  }
+
+  function download(blob, name){
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+  }
+
+  function slug(){
+    var t = (state.text || "qr").replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "");
+    return "qr-" + (t.slice(0, 40) || "code");
+  }
+
+  function toSvg(qr, o){
+    var count = qr.getModuleCount(), g = geometry(count, o), s = g.mod;
+    var d = "";
+    for (var r = 0; r < count; r++){
+      for (var c = 0; c < count; c++){
+        if (qr.isDark(r, c)) d += "M" + ((c + o.margin) * s) + " " + ((r + o.margin) * s) + "h" + s + "v" + s + "h-" + s + "z";
+      }
+    }
+    var out = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="' + g.px + '" height="' + g.px + '" viewBox="0 0 ' + g.px + ' ' + g.px + '" shape-rendering="crispEdges">';
+    if (!o.transparent) out += '<rect width="100%" height="100%" fill="' + o.bg + '"/>';
+    out += '<path d="' + d + '" fill="' + o.fg + '"/>';
+    if (state.logo && state.logoDataUrl){
+      var side = Math.round(g.px * o.logoPct / 100), xy = Math.round((g.px - side) / 2), pad = Math.max(3, Math.round(side * 0.09));
+      out += '<rect x="' + (xy - pad) + '" y="' + (xy - pad) + '" width="' + (side + pad * 2) + '" height="' + (side + pad * 2) +
+             '" rx="' + Math.round(side * 0.16) + '" fill="' + (o.transparent ? "#ffffff" : o.bg) + '"/>';
+      out += '<image x="' + xy + '" y="' + xy + '" width="' + side + '" height="' + side + '" href="' + state.logoDataUrl + '"/>';
+    }
+    out += '</svg>';
+    return out;
+  }
+
+  function schedule(){ clearTimeout(timer); timer = setTimeout(build, 120); }
+
+  ["content","ecc","size","margin","fg","bg","transparent","logoPct"].forEach(function(id){
+    var el = $(id);
+    el.addEventListener(el.tagName === "TEXTAREA" || el.type === "number" || el.type === "color" ? "input" : "change", schedule);
+    if (el.tagName === "TEXTAREA") el.addEventListener("input", schedule);
+  });
+
+  $("logo").addEventListener("change", function(e){
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function(){
+      var img = new Image();
+      img.onload = function(){
+        state.logo = img; state.logoDataUrl = rd.result;
+        if ($("ecc").value !== "H") $("ecc").value = "H";
+        build();
+      };
+      img.src = rd.result;
+    };
+    rd.readAsDataURL(f);
+  });
+
+  $("clearLogo").addEventListener("click", function(){
+    state.logo = null; state.logoDataUrl = null; $("logo").value = ""; build();
+  });
+
+  $("dlPng").addEventListener("click", function(){
+    if (!state.qr) return;
+    var blob = null;
+    var o = state.lastOpts;
+    if (canvas.toBlob) canvas.toBlob(function(b){ if (b) download(b, slug() + ".png"); }, "image/png");
+    else download(new Blob([atob(canvas.toDataURL("image/png").split(",")[1])], {type:"image/png"}), slug() + ".png");
+  });
+
+  $("dlSvg").addEventListener("click", function(){
+    if (!state.qr) return;
+    var svg = toSvg(state.qr, state.lastOpts);
+    download(new Blob([svg], {type:"image/svg+xml"}), slug() + ".svg");
+  });
+
+  $("copyBtn").addEventListener("click", function(){
+    if (!state.qr) return;
+    canvas.toBlob(function(b){
+      if (!b || !navigator.clipboard || !window.ClipboardItem){
+        $("err").textContent = "Clipboard image not supported here — use Download PNG.";
+        return;
+      }
+      navigator.clipboard.write([new ClipboardItem({"image/png": b})]).then(function(){
+        $("err").textContent = "";
+        $("meta").textContent = "Copied image ✓";
+      }).catch(function(){ $("err").textContent = "Copy blocked — use Download PNG."; });
+    }, "image/png");
+  });
+
+  $("copyText").addEventListener("click", function(){
+    var t = normalizeText($("content").value);
+    if (!t) return;
+    var ta = document.createElement("textarea");
+    ta.value = t; ta.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); $("meta").textContent = "Copied text ✓"; } catch(e){}
+    ta.remove();
+  });
+
+  $("themeBtn").addEventListener("click", function(){
+    var dark = document.documentElement.getAttribute("data-theme") === "dark";
+    document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+    try { localStorage.setItem("qrs-theme", dark ? "light" : "dark"); } catch(e){}
+  });
+
+  build();
+  window.__qrStudio = { build: build, state: state };
+})();
+</script>
+</body>
+</html>
