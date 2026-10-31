@@ -4,6 +4,10 @@
 
 Offline QR / code generator. One HTML file, no server, no network, no tracking.
 
+**Languages:** English (default), Kreyòl, Français, Español, Português — switch in the header,
+or deep-link with `?lang=ht` / `fr` / `es` / `pt`. The choice is remembered; translations live in
+`src/i18n.js` (English is the source, other languages fall back key by key).
+
 ## Use
 
 Double-click `index.html` (or open it in Chrome). Nothing to install.
@@ -27,6 +31,19 @@ python3 build.py       # src/app.html + lib/qrcode.js -> index.html
 - `src/app.html` — the app shell, styles and logic (edit this)
 - `lib/qrcode.js` — qrcode-generator v1.4.4, Kazuhiko Arase, MIT
 - `index.html` — standalone build, library inlined for `file://` use
+
+## Security (A+ gate)
+
+- Strict **hash-pinned CSP** generated at build time: `default-src 'none'`, `script-src`/`style-src`
+  pin every inline block by SHA-256, `img-src 'self' data: blob:`, `connect-src 'none'`,
+  `form-action 'none'`, `base-uri 'none'`, `object-src 'none'`. No `unsafe-inline`, no `unsafe-eval`.
+- No inline `on*=` handlers, no `eval`, no `document.write`, no `innerHTML` with user data
+  (everything passes through an `& < > " '` escaper).
+- Input caps on every field (`maxlength` + code-level `slice`), chat answers stripped of control
+  characters, logo upload gated on MIME type and an 8 MB ceiling.
+- Zero network calls: the QR library is vendored and inlined, so `connect-src 'none'` holds.
+- External links use `rel="noopener noreferrer"`; referrer policy is `strict-origin-when-cross-origin`.
+- Verified with `~/scripts/ai-security-check.sh .` (0 blocking findings) and a live header check.
 
 ## Hosting
 
