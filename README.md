@@ -43,7 +43,10 @@ python3 build.py       # src/app.html + lib/qrcode.js -> index.html
   characters, logo upload gated on MIME type and an 8 MB ceiling.
 - Zero network calls: the QR library is vendored and inlined, so `connect-src 'none'` holds.
 - External links use `rel="noopener noreferrer"`; referrer policy is `strict-origin-when-cross-origin`.
-- Verified with `~/scripts/ai-security-check.sh .` (0 blocking findings) and a live header check.
+- Verified with `~/scripts/ai-security-check.sh .` — 0 blocking findings. Two advisory notes remain and
+  are reviewed: the form-field templates and the status line assign `innerHTML` from strings whose
+  every interpolated value goes through the `esc()` escaper (`& < > " '`); no user text reaches the
+  DOM unescaped.
 
 ## Hosting
 
