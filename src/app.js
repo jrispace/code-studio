@@ -1188,7 +1188,14 @@
   /* PWA: the service worker only exists in a secure context (https or localhost) */
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("sw.js").catch(function () {});
+      navigator.serviceWorker.register("sw.js").then(function (reg) {
+        var mark = function (state) { document.documentElement.setAttribute("data-sw", state); };
+        if (reg.active) mark(reg.active.state);
+        reg.addEventListener("updatefound", function () { mark("updating"); });
+        navigator.serviceWorker.ready.then(function (r) { mark(r.active ? r.active.state : "ready"); });
+      }).catch(function () {
+        document.documentElement.setAttribute("data-sw", "failed");
+      });
     });
   }
 
