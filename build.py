@@ -42,12 +42,12 @@ def build_csp(html: str) -> str:
         "img-src 'self' data: blob:",
         "font-src 'self'",
         "media-src 'none'",
-        "connect-src 'none'",
+        "connect-src 'self'",
         "form-action 'none'",
         "base-uri 'none'",
         "object-src 'none'",
         "frame-src 'none'",
-        "worker-src 'none'",
+        "worker-src 'self'",
         "manifest-src 'self'",
     ]
     return '<meta http-equiv="Content-Security-Policy" content="' + "; ".join(parts) + '">'

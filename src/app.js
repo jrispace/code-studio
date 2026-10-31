@@ -1185,6 +1185,13 @@
   }
   if (window.CS) CS.apply(savedLang);
 
+  /* PWA: the service worker only exists in a secure context (https or localhost) */
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+
   /* chat chrome strings */
   $("chatStatus").textContent = T("chat.status");
   $("chatText").placeholder = T("chat.ph");

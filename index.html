@@ -2,12 +2,22 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-spPcNCAcK8AruTplgdbc50c3qWPVRuk/AXClWzwJN7w=' 'sha256-2z+Q24FF23jN60/Ik3CCoUzpztOWiI5iNBdKgdB6AQ8=' 'sha256-bTQxYcJXFS7323Up1r3mUUG7f/Ct5i3o5BmQxH/vtvk=' 'sha256-FFMKFxGBEAHLjTwH9n7OxWQ8UFus1uE/7mljvvsW9tk='; style-src 'sha256-L0CM5HDY0ABZrM5TfKPQzWLZ4AKXv22EKZwNm5GuFZU='; img-src 'self' data: blob:; font-src 'self'; media-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-spPcNCAcK8AruTplgdbc50c3qWPVRuk/AXClWzwJN7w=' 'sha256-2z+Q24FF23jN60/Ik3CCoUzpztOWiI5iNBdKgdB6AQ8=' 'sha256-bTQxYcJXFS7323Up1r3mUUG7f/Ct5i3o5BmQxH/vtvk=' 'sha256-0y1CfZQL1so1FUke432zoKoPQw+hMOVl3/qb4x2M69U='; style-src 'sha256-L0CM5HDY0ABZrM5TfKPQzWLZ4AKXv22EKZwNm5GuFZU='; img-src 'self' data: blob:; font-src 'self'; media-src 'none'; connect-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Code Studio — QR codes &amp; barcodes, offline</title>
 <meta name="description" content="Code Studio by JRiSpace — offline QR code generator with 13 content types, custom shapes, gradients, frames and logos. Export PNG, JPG, SVG or PDF. No tracking.">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#0a1734">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="application-name" content="Code Studio">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Code Studio">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <script>(function(){try{var t=localStorage.getItem("qrs-theme");if(t==="dark")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
 <style>
   :root{
@@ -4811,6 +4821,13 @@ var qrcode = function() {
     langSel.addEventListener("change", function () { setLang(langSel.value, true); });
   }
   if (window.CS) CS.apply(savedLang);
+
+  /* PWA: the service worker only exists in a secure context (https or localhost) */
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
 
   /* chat chrome strings */
   $("chatStatus").textContent = T("chat.status");

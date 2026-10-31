@@ -1,0 +1,66 @@
+{
+  "name": "Code Studio \u2014 QR codes & barcodes",
+  "short_name": "Code Studio",
+  "description": "Offline QR code generator by JRiSpace \u2014 13 content types, custom shapes, gradients, frames, logos. Export PNG, JPG, SVG or PDF.",
+  "id": "/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#f5f7fc",
+  "theme_color": "#0a1734",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "productivity",
+    "utilities",
+    "business"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New link code",
+      "short_name": "Link",
+      "url": "./?t=link"
+    },
+    {
+      "name": "New Wi-Fi code",
+      "short_name": "Wi-Fi",
+      "url": "./?t=wifi"
+    },
+    {
+      "name": "New vCard",
+      "short_name": "vCard",
+      "url": "./?t=vcard"
+    }
+  ]
+}

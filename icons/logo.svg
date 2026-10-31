@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Code Studio">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f2350"/>
+      <stop offset="0.55" stop-color="#0a1734"/>
+      <stop offset="1" stop-color="#060d1e"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0.86" cy="0.1" r="0.75">
+      <stop offset="0" stop-color="#c0182f" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#c0182f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0.08" cy="0.95" r="0.7">
+      <stop offset="0" stop-color="#0a3bb5" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#0a3bb5" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f2f6ff"/>
+    </linearGradient>
+    <linearGradient id="slash" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff8fa3"/>
+      <stop offset="1" stop-color="#ffd0a8"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="232" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="232" fill="url(#glowA)"/>
+  <rect width="1024" height="1024" rx="232" fill="url(#glowB)"/>
+  <rect x="10" y="10" width="1004" height="1004" rx="224" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="8"/>
+
+  <!-- three finder patterns: the QR signature -->
+  <g fill="url(#ink)">
+    <path d="M132 132h236a24 24 0 0 1 24 24v236a24 24 0 0 1-24 24H132a24 24 0 0 1-24-24V156a24 24 0 0 1 24-24zm48 72v152h140V204z" fill-rule="evenodd"/>
+    <path d="M656 132h236a24 24 0 0 1 24 24v236a24 24 0 0 1-24 24H656a24 24 0 0 1-24-24V156a24 24 0 0 1 24-24zm48 72v152h140V204z" fill-rule="evenodd"/>
+    <path d="M132 608h236a24 24 0 0 1 24 24v236a24 24 0 0 1-24 24H132a24 24 0 0 1-24-24V632a24 24 0 0 1 24-24zm48 72v152h140V680z" fill-rule="evenodd"/>
+  </g>
+
+  <!-- the studio mark: a code slash in the fourth quadrant -->
+  <g fill="none" stroke-width="46" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#ffffff" stroke-opacity="0.96">
+      <path d="M736 706l-66 70 66 70"/>
+      <path d="M874 706l66 70-66 70"/>
+    </g>
+    <path d="M832 676l-52 220" stroke="url(#slash)"/>
+  </g>
+</svg>
