@@ -30,8 +30,14 @@ python3 build.py       # src/app.html + lib/qrcode.js -> index.html
 
 ## Hosting
 
-GitHub Pages from `main` / root, custom domain `codestudio.jrispace.com`
-(`CNAME` in this repo + a DNS-only CNAME `codestudio` → `jrispace.github.io` at Cloudflare).
+GitHub Pages from `main` / root, custom domain `codestudio.jrispace.com`.
+
+- `CNAME` in this repo pins the custom domain for Pages.
+- DNS (Cloudflare zone `jrispace.com`): `CNAME codestudio → jrispace.github.io`,
+  **proxied** so Cloudflare terminates TLS with the `*.jrispace.com` Universal SSL
+  certificate and forwards to GitHub over HTTPS (zone SSL mode: Full).
+- GitHub's own certificate for the custom domain stays "unverified", so the
+  Cloudflare edge is what makes HTTPS available to visitors.
 
 ## Verified
 
